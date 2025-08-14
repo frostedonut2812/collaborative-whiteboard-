@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import RoomSelector from './RoomSelector';
+import { PenIcon, EraserIcon, TrashIcon, UsersIcon, PaletteIcon, SlidersIcon } from './Icons';
 import './Whiteboard.scss';
 
 const Whiteboard = () => {
@@ -213,6 +214,7 @@ const Whiteboard = () => {
       <div className="toolbar">
         <div className="toolbar-section">
           <div className="user-count">
+            <UsersIcon size={16} className="user-icon" />
             Users online: {userCount}
           </div>
         </div>
@@ -223,19 +225,20 @@ const Whiteboard = () => {
               className={currentTool === 'pen' ? 'active' : ''}
               onClick={() => setCurrentTool('pen')}
             >
-              <span className="tool-icon">✏️</span>
+              <PenIcon size={18} className="tool-icon" />
               Pen
             </button>
             <button 
               className={currentTool === 'eraser' ? 'active' : ''}
               onClick={() => setCurrentTool('eraser')}
             >
-              <span className="tool-icon">🧽</span>
+              <EraserIcon size={18} className="tool-icon" />
               Eraser
             </button>
           </div>
 
           <div className="color-section">
+            <PaletteIcon size={16} className="color-icon" />
             <label className="color-label">Color</label>
             <div className="color-picker-wrapper">
               <input 
@@ -248,6 +251,7 @@ const Whiteboard = () => {
           </div>
 
           <div className="size-section">
+            <SlidersIcon size={16} className="size-icon" />
             <label className="size-label">Size</label>
             <input 
               className="size-slider"
@@ -263,7 +267,7 @@ const Whiteboard = () => {
 
         <div className="toolbar-section">
           <button className="clear-btn" onClick={handleClearCanvas}>
-            <span className="clear-icon">🗑️</span>
+            <TrashIcon size={18} className="clear-icon" />
             Clear All
           </button>
         </div>
