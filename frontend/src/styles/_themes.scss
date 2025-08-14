@@ -6,18 +6,18 @@ $theme-light: (
   surface: $light-gray,
   text: $text-color,
   border: $border-color,
-  shadow: rgba(0, 0, 0, 0.1)
+  shadow: rgba(0, 0, 0, 0.1),
 );
 
 // Dark theme (future enhancement)
 $theme-dark: (
-  primary: #64B5F6,
-  secondary: #81C784,
+  primary: #64b5f6,
+  secondary: #81c784,
   background: #121212,
-  surface: #1E1E1E,
-  text: #FFFFFF,
+  surface: #1e1e1e,
+  text: #ffffff,
   border: #333333,
-  shadow: rgba(0, 0, 0, 0.3)
+  shadow: rgba(0, 0, 0, 0.3),
 );
 
 // Theme mixin
