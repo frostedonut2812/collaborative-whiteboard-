@@ -211,50 +211,62 @@ const Whiteboard = () => {
         currentRoom={currentRoom}
       />
       <div className="toolbar">
-        <div className="user-count">
-          Users online: {userCount}
+        <div className="toolbar-section">
+          <div className="user-count">
+            Users online: {userCount}
+          </div>
         </div>
         
-        <div className="tool-group">
-          <button 
-            className={currentTool === 'pen' ? 'active' : ''}
-            onClick={() => setCurrentTool('pen')}
-          >
-            ✏️ Pen
+        <div className="toolbar-section">
+          <div className="tool-group">
+            <button 
+              className={currentTool === 'pen' ? 'active' : ''}
+              onClick={() => setCurrentTool('pen')}
+            >
+              <span className="tool-icon">✏️</span>
+              Pen
+            </button>
+            <button 
+              className={currentTool === 'eraser' ? 'active' : ''}
+              onClick={() => setCurrentTool('eraser')}
+            >
+              <span className="tool-icon">🧽</span>
+              Eraser
+            </button>
+          </div>
+
+          <div className="color-section">
+            <label className="color-label">Color</label>
+            <div className="color-picker-wrapper">
+              <input 
+                type="color" 
+                value={currentColor} 
+                onChange={(e) => setCurrentColor(e.target.value)}
+                disabled={currentTool === 'eraser'}
+              />
+            </div>
+          </div>
+
+          <div className="size-section">
+            <label className="size-label">Size</label>
+            <input 
+              className="size-slider"
+              type="range" 
+              min="1" 
+              max="20" 
+              value={currentSize}
+              onChange={(e) => setCurrentSize(parseInt(e.target.value))}
+            />
+            <span className="size-display">{currentSize}px</span>
+          </div>
+        </div>
+
+        <div className="toolbar-section">
+          <button className="clear-btn" onClick={handleClearCanvas}>
+            <span className="clear-icon">🗑️</span>
+            Clear All
           </button>
-          <button 
-            className={currentTool === 'eraser' ? 'active' : ''}
-            onClick={() => setCurrentTool('eraser')}
-          >
-            🧽 Eraser
-          </button>
         </div>
-
-        <div className="color-group">
-          <label>Color: </label>
-          <input 
-            type="color" 
-            value={currentColor} 
-            onChange={(e) => setCurrentColor(e.target.value)}
-            disabled={currentTool === 'eraser'}
-          />
-        </div>
-
-        <div className="size-group">
-          <label>Size: </label>
-          <input 
-            type="range" 
-            min="1" 
-            max="20" 
-            value={currentSize}
-            onChange={(e) => setCurrentSize(parseInt(e.target.value))}
-          />
-          <span>{currentSize}px</span>
-        </div>
-
-        <button className="clear-btn" onClick={handleClearCanvas}>
-          🗑️ Clear All
-        </button>
       </div>
 
       <div className="canvas-container">
