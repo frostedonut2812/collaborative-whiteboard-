@@ -54,8 +54,8 @@ git push -u origin main
 - **Runtime**: `Node`
 
 #### Build & Deploy Settings:
-- **Build Command**: `npm install && cd client && npm install && npm run build`
-- **Start Command**: `npm start`
+- **Build Command**: `cd frontend && npm install && npm run build`
+- **Start Command**: `cd backend && node server.js`
 
 #### Environment Variables:
 - **NODE_ENV**: `production`
