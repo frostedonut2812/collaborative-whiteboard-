@@ -1,0 +1,122 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.room-selector {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xl;
+  padding: 10px $spacing-xl;
+  background: $room-selector-gradient;
+  border-bottom: 1px solid $medium-gray;
+  flex-wrap: wrap;
+  @include fade-in;
+
+  .room-info {
+    display: flex;
+    align-items: center;
+
+    .current-room {
+      font-size: 14px;
+      color: $text-color;
+      background-color: rgba($white, 0.8);
+      padding: 6px $spacing-md;
+      border-radius: $border-radius-xl;
+      border: 1px solid $border-color;
+      font-weight: 500;
+      @include fade-in(0.3s);
+
+      strong {
+        color: $primary-color;
+      }
+    }
+  }
+
+  .room-form {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+
+    .room-input {
+      @include input-base;
+      min-width: 150px;
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+    }
+
+    .join-btn {
+      @include button-primary;
+    }
+  }
+
+  .quick-rooms {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+
+    .quick-label {
+      font-size: 12px;
+      color: $dark-gray;
+      font-weight: 500;
+      margin-right: $spacing-xs;
+    }
+
+    .quick-room-btn {
+      @include button-base;
+      background-color: $white;
+      color: $text-color;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-lg;
+      padding: 6px $spacing-md;
+      font-size: 12px;
+      transition: all $transition-normal;
+
+      &:hover {
+        background-color: $light-gray;
+        border-color: darken($border-color, 10%);
+        transform: translateY(-2px);
+      }
+
+      &.active {
+        background-color: $success-color;
+        color: $white;
+        border-color: $success-color;
+        @include pulse($success-color);
+      }
+    }
+  }
+
+  // Responsive design
+  @include tablet {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    
+    .room-form {
+      justify-content: center;
+    }
+    
+    .quick-rooms {
+      justify-content: center;
+    }
+    
+    .room-input {
+      min-width: 120px;
+    }
+  }
+
+  @include mobile {
+    padding: 15px;
+    
+    .quick-rooms {
+      gap: 6px;
+      
+      .quick-room-btn {
+        padding: 4px $spacing-sm;
+        font-size: 11px;
+      }
+    }
+  }
+}
