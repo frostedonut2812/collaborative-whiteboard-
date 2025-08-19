@@ -1,207 +1,136 @@
 @import '../styles/variables';
-@import '../styles/mixins';
 
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: $blue;
+  border-bottom: 1px solid #1976d2;
   position: relative;
-  z-index: 1000;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    pointer-events: none;
-  }
-
-  &__container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 $spacing-xl;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 70px;
-    position: relative;
-    z-index: 1;
-  }
-
-  &__brand {
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
-  }
-
-  &__logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-
-    svg {
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-    }
-  }
-
-  &__title {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-
-    h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-      color: $white;
-      letter-spacing: -0.5px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      line-height: 1;
-    }
-  }
-
-  &__subtitle {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-lg;
-  }
-
-  &__status {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-xl;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 14px;
-    font-weight: 600;
-    color: $white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-    .status-indicator {
-      width: 8px;
-      height: 8px;
-      background: #4ade80;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
-    }
-  }
-
-  &__user-menu {
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: $white;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.4);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      svg {
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-      }
-    }
-  }
 }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
-  }
+.header__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 $large;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
 }
 
-// Responsive design
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: $medium;
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__title h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: $white;
+  line-height: 1;
+}
+
+.header__subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: $medium;
+}
+
+.header__status {
+  display: flex;
+  align-items: center;
+  gap: $small;
+  background: rgba(255, 255, 255, 0.1);
+  padding: $small $medium;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  color: $white;
+}
+
+.header__status .status-indicator {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+}
+
+.header__user-menu .user-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.header__user-menu .user-avatar:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile styles */
 @media (max-width: 768px) {
-  .header {
-    &__container {
-      padding: 0 $spacing-md;
-      height: 60px;
-    }
+  .header__container {
+    padding: 0 $medium;
+    height: 60px;
+  }
 
-    &__title {
-      h1 {
-        font-size: 20px;
-      }
-    }
+  .header__title h1 {
+    font-size: 20px;
+  }
 
-    &__subtitle {
-      display: none;
-    }
+  .header__subtitle {
+    display: none;
+  }
 
-    &__actions {
-      gap: $spacing-md;
-    }
+  .header__actions {
+    gap: $medium;
+  }
 
-    &__status {
-      padding: $spacing-xs $spacing-sm;
-      font-size: 12px;
+  .header__status {
+    padding: 4px $small;
+    font-size: 12px;
+  }
 
-      span {
-        display: none;
-      }
-    }
+  .header__status span {
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
-  .header {
-    &__container {
-      padding: 0 $spacing-sm;
-    }
+  .header__container {
+    padding: 0 $small;
+  }
 
-    &__brand {
-      gap: $spacing-sm;
-    }
+  .header__brand {
+    gap: $small;
+  }
 
-    &__title {
-      h1 {
-        font-size: 18px;
-      }
-    }
+  .header__title h1 {
+    font-size: 18px;
+  }
 
-    &__user-menu {
-      .user-avatar {
-        width: 36px;
-        height: 36px;
-      }
-    }
+  .header__user-menu .user-avatar {
+    width: 36px;
+    height: 36px;
   }
 }

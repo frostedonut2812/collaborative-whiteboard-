@@ -1,32 +1,33 @@
 {
   "name": "collaborative-whiteboard",
   "version": "1.0.0",
-  "description": "A real-time collaborative whiteboard application with modern UI",
-  "main": "backend/server.js",
+  "description": "A collaborative whiteboarding application with real-time multi-user support",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm start",
-    "build": "cd frontend && npm install && npm run build",
-    "start": "cd backend && npm start",
-    "install-deps": "cd backend && npm install && cd ../frontend && npm install",
-    "heroku-postbuild": "npm run build"
+    "client": "cd client && PORT=3001 npm start",
+    "server": "nodemon server.js",
+    "build": "cd client && npm run build",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [
     "whiteboard",
     "collaborative",
-    "real-time",
-    "react",
     "socket.io",
-    "drawing"
+    "react",
+    "express"
   ],
-  "author": "Your Name",
+  "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "path": "^0.12.7",
+    "socket.io": "^4.7.2"
   },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.0.1"
   }
 }

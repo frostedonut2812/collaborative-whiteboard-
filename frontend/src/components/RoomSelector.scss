@@ -1,122 +1,124 @@
 @import '../styles/variables';
-@import '../styles/mixins';
 
 .room-selector {
   display: flex;
   align-items: center;
-  gap: $spacing-xl;
-  padding: 10px $spacing-xl;
-  background: $room-selector-gradient;
-  border-bottom: 1px solid $medium-gray;
+  gap: $large;
+  padding: $medium;
+  background: $light-gray;
+  border-bottom: 1px solid $border-gray;
   flex-wrap: wrap;
-  @include fade-in;
+}
 
-  .room-info {
-    display: flex;
-    align-items: center;
+.room-info .current-room {
+  font-size: 14px;
+  color: #333;
+  background: $white;
+  padding: $small $medium;
+  border-radius: 8px;
+  border: 1px solid $border-gray;
+  font-weight: 500;
+}
 
-    .current-room {
-      font-size: 14px;
-      color: $text-color;
-      background-color: rgba($white, 0.8);
-      padding: 6px $spacing-md;
-      border-radius: $border-radius-xl;
-      border: 1px solid $border-color;
-      font-weight: 500;
-      @include fade-in(0.3s);
+.room-info .current-room strong {
+  color: $blue;
+}
 
-      strong {
-        color: $primary-color;
-      }
-    }
-  }
+.room-form {
+  display: flex;
+  gap: $small;
+  align-items: center;
+}
 
-  .room-form {
-    display: flex;
-    gap: $spacing-sm;
-    align-items: center;
+.room-form .room-input {
+  border: 2px solid $border-gray;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: $small $medium;
+  min-width: 150px;
+}
 
-    .room-input {
-      @include input-base;
-      min-width: 150px;
-      
-      &:focus {
-        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-      }
-    }
+.room-form .room-input:focus {
+  outline: none;
+  border-color: $blue;
+}
 
-    .join-btn {
-      @include button-primary;
-    }
-  }
+.room-form .join-btn {
+  background: $blue;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  padding: $small $medium;
+  cursor: pointer;
+  font-size: 14px;
+}
 
-  .quick-rooms {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    flex-wrap: wrap;
+.room-form .join-btn:hover {
+  background: #1976d2;
+}
 
-    .quick-label {
-      font-size: 12px;
-      color: $dark-gray;
-      font-weight: 500;
-      margin-right: $spacing-xs;
-    }
+.quick-rooms {
+  display: flex;
+  align-items: center;
+  gap: $small;
+  flex-wrap: wrap;
+}
 
-    .quick-room-btn {
-      @include button-base;
-      background-color: $white;
-      color: $text-color;
-      border: 1px solid $border-color;
-      border-radius: $border-radius-lg;
-      padding: 6px $spacing-md;
-      font-size: 12px;
-      transition: all $transition-normal;
+.quick-rooms .quick-label {
+  font-size: 12px;
+  color: $gray;
+  font-weight: 500;
+  margin-right: 4px;
+}
 
-      &:hover {
-        background-color: $light-gray;
-        border-color: darken($border-color, 10%);
-        transform: translateY(-2px);
-      }
+.quick-rooms .quick-room-btn {
+  background: $white;
+  color: #333;
+  border: 1px solid $border-gray;
+  border-radius: 8px;
+  padding: 6px $medium;
+  font-size: 12px;
+  cursor: pointer;
+}
 
-      &.active {
-        background-color: $success-color;
-        color: $white;
-        border-color: $success-color;
-        @include pulse($success-color);
-      }
-    }
-  }
+.quick-rooms .quick-room-btn:hover {
+  background: $light-gray;
+}
 
-  // Responsive design
-  @include tablet {
+.quick-rooms .quick-room-btn.active {
+  background: $green;
+  color: $white;
+  border-color: $green;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .room-selector {
     flex-direction: column;
     align-items: stretch;
     gap: 15px;
-    
-    .room-form {
-      justify-content: center;
-    }
-    
-    .quick-rooms {
-      justify-content: center;
-    }
-    
-    .room-input {
-      min-width: 120px;
-    }
   }
+  
+  .room-form {
+    justify-content: center;
+  }
+  
+  .quick-rooms {
+    justify-content: center;
+  }
+}
 
-  @include mobile {
+@media (max-width: 480px) {
+  .room-selector {
     padding: 15px;
-    
-    .quick-rooms {
-      gap: 6px;
-      
-      .quick-room-btn {
-        padding: 4px $spacing-sm;
-        font-size: 11px;
-      }
-    }
+  }
+  
+  .quick-rooms {
+    gap: 6px;
+  }
+  
+  .quick-rooms .quick-room-btn {
+    padding: 4px $small;
+    font-size: 11px;
   }
 }

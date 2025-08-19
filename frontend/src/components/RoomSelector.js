@@ -4,10 +4,23 @@ import './RoomSelector.scss';
 const RoomSelector = ({ onJoinRoom, currentRoom }) => {
   const [roomInput, setRoomInput] = useState('');
 
-  const handleJoinRoom = (e) => {
+  const validateRoomId = (roomId) => {
+    return roomId && 
+           roomId.length >= 1 && 
+           roomId.length <= 50 && 
+           /^[a-zA-Z0-9_-]+$/.test(roomId);
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const roomId = roomInput.trim() || 'general';
-    onJoinRoom(roomId);
+    const trimmedRoom = roomInput.trim();
+    
+    if (!validateRoomId(trimmedRoom)) {
+      alert('Room name must be 1-50 characters and contain only letters, numbers, hyphens, or underscores');
+      return;
+    }
+    
+    onJoinRoom(trimmedRoom);
     setRoomInput('');
   };
 
@@ -22,8 +35,8 @@ const RoomSelector = ({ onJoinRoom, currentRoom }) => {
           📍 Room: <strong>{currentRoom || 'Not connected'}</strong>
         </span>
       </div>
-      
-      <form onSubmit={handleJoinRoom} className="room-form">
+
+      <form onSubmit={handleSubmit} className="room-form">
         <input
           type="text"
           value={roomInput}
@@ -38,25 +51,25 @@ const RoomSelector = ({ onJoinRoom, currentRoom }) => {
 
       <div className="quick-rooms">
         <span className="quick-label">Quick join:</span>
-        <button 
+        <button
           onClick={() => handleQuickJoin('general')}
           className={`quick-room-btn ${currentRoom === 'general' ? 'active' : ''}`}
         >
           General
         </button>
-        <button 
+        <button
           onClick={() => handleQuickJoin('design')}
           className={`quick-room-btn ${currentRoom === 'design' ? 'active' : ''}`}
         >
           Design
         </button>
-        <button 
+        <button
           onClick={() => handleQuickJoin('meeting')}
           className={`quick-room-btn ${currentRoom === 'meeting' ? 'active' : ''}`}
         >
           Meeting
         </button>
-        <button 
+        <button
           onClick={() => handleQuickJoin('brainstorm')}
           className={`quick-room-btn ${currentRoom === 'brainstorm' ? 'active' : ''}`}
         >
