@@ -1,7 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import RoomSelector from './RoomSelector';
-import { PenIcon, EraserIcon, TrashIcon, UsersIcon, PaletteIcon, SlidersIcon } from './Icons';
+
+import {
+  PenIcon,
+  EraserIcon,
+  TrashIcon,
+  UsersIcon,
+  PaletteIcon,
+  SlidersIcon,
+} from './Icons';
 import './Whiteboard.scss';
 
 const Whiteboard = () => {
@@ -17,17 +25,17 @@ const Whiteboard = () => {
   const [currentRoom, setCurrentRoom] = useState(null);
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io(process.env.NODE_ENV === 'production' 
-      ? window.location.origin 
-      : 'http://localhost:5001');
+    const newSocket = io(
+      process.env.NODE_ENV === 'production'
+        ? window.location.origin
+        : 'http://localhost:5001',
+    );
     setSocket(newSocket);
 
-    // Initialize canvas
     const canvas = canvasRef.current;
     canvas.width = window.innerWidth - 100;
     canvas.height = window.innerHeight - 200;
-    
+
     const context = canvas.getContext('2d');
     context.scale(1, 1);
     context.lineCap = 'round';
@@ -35,12 +43,9 @@ const Whiteboard = () => {
     context.lineWidth = currentSize;
     contextRef.current = context;
 
-    // Socket event listeners
     newSocket.on('load-drawing', (drawingData) => {
-      // Clear canvas first
       clearCanvas();
-      // Draw all existing data
-      drawingData.forEach(data => {
+      drawingData.forEach((data) => {
         drawOnCanvas(data);
       });
     });
@@ -57,13 +62,13 @@ const Whiteboard = () => {
       setUserCount(count);
     });
 
-    newSocket.on('room-joined', (roomId) => {
-      setCurrentRoom(roomId);
-      console.log(`Joined room: ${roomId}`);
+    newSocket.on('room-joined', (data) => {
+      setCurrentRoom(data.roomId);
+      console.log(`Joined room: ${data.roomId}`);
     });
 
     newSocket.on('cursor-move', (data) => {
-      setCursors(prev => {
+      setCursors((prev) => {
         const newCursors = new Map(prev);
         newCursors.set(data.userId, data);
         return newCursors;
@@ -71,14 +76,13 @@ const Whiteboard = () => {
     });
 
     newSocket.on('cursor-leave', (userId) => {
-      setCursors(prev => {
+      setCursors((prev) => {
         const newCursors = new Map(prev);
         newCursors.delete(userId);
         return newCursors;
       });
     });
 
-    // Handle window resize
     const handleResize = () => {
       canvas.width = window.innerWidth - 100;
       canvas.height = window.innerHeight - 200;
@@ -90,9 +94,13 @@ const Whiteboard = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Auto-join general room on connection
     newSocket.on('connect', () => {
       newSocket.emit('join-room', 'general');
+    });
+
+    newSocket.on('error', (message) => {
+      console.error('Server validation error:', message);
+      alert(`Error: ${message}`);
     });
 
     return () => {
@@ -111,7 +119,7 @@ const Whiteboard = () => {
     if (contextRef.current) {
       contextRef.current.strokeStyle = currentColor;
       contextRef.current.lineWidth = currentSize;
-      contextRef.current.globalCompositeOperation = 
+      contextRef.current.globalCompositeOperation =
         currentTool === 'eraser' ? 'destination-out' : 'source-over';
     }
   }, [currentColor, currentSize, currentTool]);
@@ -122,7 +130,8 @@ const Whiteboard = () => {
     const prevStrokeStyle = context.strokeStyle;
     const prevLineWidth = context.lineWidth;
 
-    context.globalCompositeOperation = data.tool === 'eraser' ? 'destination-out' : 'source-over';
+    context.globalCompositeOperation =
+      data.tool === 'eraser' ? 'destination-out' : 'source-over';
     context.strokeStyle = data.color;
     context.lineWidth = data.size;
 
@@ -141,7 +150,7 @@ const Whiteboard = () => {
     setIsDrawing(true);
     contextRef.current.beginPath();
     contextRef.current.moveTo(offsetX, offsetY);
-    
+
     // Initialize position for drawing
     contextRef.current.lastX = offsetX;
     contextRef.current.lastY = offsetY;
@@ -155,9 +164,9 @@ const Whiteboard = () => {
 
   const draw = (e) => {
     if (!isDrawing) return;
-    
+
     const { offsetX, offsetY } = e.nativeEvent;
-    
+
     // Get the previous position for line drawing
     const prevX = contextRef.current.lastX || offsetX;
     const prevY = contextRef.current.lastY || offsetY;
@@ -174,7 +183,7 @@ const Whiteboard = () => {
         y1: offsetY,
         color: currentColor,
         size: currentSize,
-        tool: currentTool
+        tool: currentTool,
       });
     }
 
@@ -188,7 +197,7 @@ const Whiteboard = () => {
       const rect = canvasRef.current.getBoundingClientRect();
       socket.emit('cursor-move', {
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        y: e.clientY - rect.top,
       });
     }
   };
@@ -207,10 +216,7 @@ const Whiteboard = () => {
 
   return (
     <div className="whiteboard-container">
-      <RoomSelector 
-        onJoinRoom={handleJoinRoom}
-        currentRoom={currentRoom}
-      />
+      <RoomSelector onJoinRoom={handleJoinRoom} currentRoom={currentRoom} />
       <div className="toolbar">
         <div className="toolbar-section">
           <div className="user-count">
@@ -218,17 +224,17 @@ const Whiteboard = () => {
             Users online: {userCount}
           </div>
         </div>
-        
+
         <div className="toolbar-section">
           <div className="tool-group">
-            <button 
+            <button
               className={currentTool === 'pen' ? 'active' : ''}
               onClick={() => setCurrentTool('pen')}
             >
               <PenIcon size={18} className="tool-icon" />
               Pen
             </button>
-            <button 
+            <button
               className={currentTool === 'eraser' ? 'active' : ''}
               onClick={() => setCurrentTool('eraser')}
             >
@@ -241,9 +247,9 @@ const Whiteboard = () => {
             <PaletteIcon size={16} className="color-icon" />
             <label className="color-label">Color</label>
             <div className="color-picker-wrapper">
-              <input 
-                type="color" 
-                value={currentColor} 
+              <input
+                type="color"
+                value={currentColor}
                 onChange={(e) => setCurrentColor(e.target.value)}
                 disabled={currentTool === 'eraser'}
               />
@@ -253,11 +259,11 @@ const Whiteboard = () => {
           <div className="size-section">
             <SlidersIcon size={16} className="size-icon" />
             <label className="size-label">Size</label>
-            <input 
+            <input
               className="size-slider"
-              type="range" 
-              min="1" 
-              max="20" 
+              type="range"
+              min="1"
+              max="20"
               value={currentSize}
               onChange={(e) => setCurrentSize(parseInt(e.target.value))}
             />
@@ -284,7 +290,7 @@ const Whiteboard = () => {
           }}
           onMouseLeave={finishDrawing}
         />
-        
+
         {/* Render other users' cursors */}
         {Array.from(cursors.entries()).map(([userId, cursor]) => (
           <div
@@ -293,7 +299,7 @@ const Whiteboard = () => {
             style={{
               left: cursor.x,
               top: cursor.y,
-              borderColor: cursor.color
+              borderColor: cursor.color,
             }}
           />
         ))}

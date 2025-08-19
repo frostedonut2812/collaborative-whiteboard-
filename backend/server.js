@@ -4,54 +4,78 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 const path = require('path');
 
+function validateRoomId(roomId) {
+  return typeof roomId === 'string' && 
+         roomId.length >= 1 && 
+         roomId.length <= 50 && 
+         /^[a-zA-Z0-9_-]+$/.test(roomId);
+}
+
+function validateDrawingData(data) {
+  return data && 
+         typeof data.x === 'number' && 
+         typeof data.y === 'number' && 
+         typeof data.prevX === 'number' && 
+         typeof data.prevY === 'number' &&
+         data.x >= 0 && data.x <= 5000 &&
+         data.y >= 0 && data.y <= 5000;
+}
+
+function validateCursorData(data) {
+  return data && 
+         typeof data.x === 'number' && 
+         typeof data.y === 'number' &&
+         data.x >= 0 && data.x <= 5000 &&
+         data.y >= 0 && data.y <= 5000;
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? [process.env.FRONTEND_URL || "https://your-app.herokuapp.com"]
-      : ["http://localhost:3000", "http://localhost:3001"],
-    methods: ["GET", "POST"]
-  }
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? [process.env.FRONTEND_URL || 'https://your-app.herokuapp.com']
+        : ['http://localhost:3000', 'http://localhost:3001'],
+    methods: ['GET', 'POST'],
+  },
 });
 
 const PORT = process.env.PORT || 5001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Store drawing data per room
-let roomData = new Map(); // roomId -> { drawingData: [], users: Map() }
-let connectedUsers = new Map(); // socketId -> { id, color, room }
+let roomData = new Map();
+let connectedUsers = new Map();
 
-// Serve static files from React build (for production)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
-  
+
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });
 }
 
-// Helper function to get or create room data
 function getRoomData(roomId) {
   if (!roomData.has(roomId)) {
     roomData.set(roomId, {
       drawingData: [],
-      users: new Map()
+      users: new Map(),
     });
   }
   return roomData.get(roomId);
 }
 
-// Socket.io connection handling
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-  
-  // Handle joining a room
+
   socket.on('join-room', (roomId) => {
-    // Leave any previous room
+    if (!validateRoomId(roomId)) {
+      socket.emit('error', 'Invalid room ID');
+      return;
+    }
+    
     if (connectedUsers.has(socket.id)) {
       const prevRoom = connectedUsers.get(socket.id).room;
       if (prevRoom) {
@@ -61,96 +85,172 @@ io.on('connection', (socket) => {
         io.to(prevRoom).emit('user-count', prevRoomData.users.size);
       }
     }
-    
-    // Join new room
+
     socket.join(roomId);
     const currentRoomData = getRoomData(roomId);
-    
-    // Add user to connected users and room
+
     const userColor = getRandomColor();
-    connectedUsers.set(socket.id, {
+    const userName = getRandomUserName();
+    const userInitials = getInitials(userName);
+
+    const userData = {
       id: socket.id,
+      name: userName,
+      initials: userInitials,
       color: userColor,
-      room: roomId
-    });
-    
-    currentRoomData.users.set(socket.id, {
-      id: socket.id,
-      color: userColor
-    });
-    
+      room: roomId,
+      joinedAt: new Date().toISOString(),
+    };
+
+    connectedUsers.set(socket.id, userData);
+    currentRoomData.users.set(socket.id, userData);
+
     console.log(`User ${socket.id} joined room: ${roomId}`);
-    
-    // Send current drawing data to new user
+
     socket.emit('load-drawing', currentRoomData.drawingData);
-    
-    // Broadcast user count to room
     io.to(roomId).emit('user-count', currentRoomData.users.size);
-    
-    // Send room info
-    socket.emit('room-joined', roomId);
+    const userList = Array.from(currentRoomData.users.values());
+    io.to(roomId).emit('users-update', userList);
+    socket.emit('room-joined', { roomId, userData });
   });
-  
-  // Handle drawing events
+
   socket.on('drawing', (data) => {
     const user = connectedUsers.get(socket.id);
     if (!user || !user.room) return;
-    
+
     const currentRoomData = getRoomData(user.room);
-    
+
     // Add drawing data to room storage
     currentRoomData.drawingData.push(data);
-    
-    // Broadcast to other clients in the same room
+
     socket.to(user.room).emit('drawing', data);
   });
-  
-  // Handle clear canvas
+
   socket.on('clear-canvas', () => {
     const user = connectedUsers.get(socket.id);
     if (!user || !user.room) return;
-    
+
     const currentRoomData = getRoomData(user.room);
     currentRoomData.drawingData = [];
-    
-    // Clear canvas for all users in the room
+
     io.to(user.room).emit('clear-canvas');
   });
-  
-  // Handle cursor movement
+
   socket.on('cursor-move', (data) => {
+    if (!validateCursorData(data)) {
+      socket.emit('error', 'Invalid cursor data');
+      return;
+    }
+    
     const user = connectedUsers.get(socket.id);
     if (!user || !user.room) return;
-    
+
     socket.to(user.room).emit('cursor-move', {
       ...data,
       userId: socket.id,
-      color: user.color
+      color: user.color,
     });
   });
-  
-  // Handle disconnect
+
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
-    
+
     const user = connectedUsers.get(socket.id);
     if (user && user.room) {
       const currentRoomData = getRoomData(user.room);
       currentRoomData.users.delete(socket.id);
-      
-      // Update user count for the room
+
       io.to(user.room).emit('user-count', currentRoomData.users.size);
+      const userList = Array.from(currentRoomData.users.values());
+      io.to(user.room).emit('users-update', userList);
       io.to(user.room).emit('cursor-leave', socket.id);
     }
-    
+
     connectedUsers.delete(socket.id);
   });
 });
 
-// Generate random color for users
 function getRandomColor() {
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+  const colors = [
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#96CEB4',
+    '#FFEAA7',
+    '#DDA0DD',
+    '#98D8C8',
+    '#F7DC6F',
+  ];
   return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function getRandomUserName() {
+  const adjectives = [
+    'Creative',
+    'Artistic',
+    'Brilliant',
+    'Clever',
+    'Dynamic',
+    'Energetic',
+    'Friendly',
+    'Gentle',
+    'Happy',
+    'Innovative',
+    'Joyful',
+    'Kind',
+    'Lively',
+    'Magical',
+    'Noble',
+    'Optimistic',
+    'Peaceful',
+    'Quick',
+    'Radiant',
+    'Smart',
+    'Talented',
+    'Unique',
+    'Vibrant',
+    'Wise',
+    'Zesty',
+  ];
+  const nouns = [
+    'Artist',
+    'Designer',
+    'Creator',
+    'Painter',
+    'Sketcher',
+    'Doodler',
+    'Illustrator',
+    'Maker',
+    'Builder',
+    'Crafter',
+    'Dreamer',
+    'Thinker',
+    'Innovator',
+    'Explorer',
+    'Pioneer',
+    'Visionary',
+    'Genius',
+    'Master',
+    'Expert',
+    'Pro',
+    'Star',
+    'Hero',
+    'Champion',
+    'Leader',
+    'Wizard',
+  ];
+
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  return `${adjective} ${noun}`;
+}
+
+function getInitials(name) {
+  return name
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
 }
 
 server.listen(PORT, () => {
