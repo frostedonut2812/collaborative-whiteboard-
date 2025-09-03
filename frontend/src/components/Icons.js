@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Professional SVG Icons for the toolbar
 export const PenIcon = ({ size = 18, className = '' }) => (
   <svg
     width={size}
