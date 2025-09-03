@@ -4,7 +4,6 @@ import './UserPresence.scss';
 const UserPresence = ({ users, currentUserId }) => {
   const userList = users || [];
 
-  // Debug logging
   console.log('UserPresence component rendered with:', {
     users,
     currentUserId,
